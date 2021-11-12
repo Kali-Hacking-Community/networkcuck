@@ -8,7 +8,7 @@ module.exports = {
   usage: `<ip address|hostname>`,
   async execute(message, args) {
     const command = NMAP_PATH;
-    const cmdArgs = [args[0]];
+    const cmdArgs = args;
     const forbidden = [';', '&', '&&'];
     let forbiddenWordDetected = false;
 
