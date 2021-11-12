@@ -3,7 +3,7 @@ const { BOT_TOKEN, TH_API_URL, PREFIX } = require('./config');
 module.exports = {
   apps: [
     {
-      name: 'foxy',
+      name: 'networkcuck',
       script: './bot.js',
       env: {
         NODE_ENV: 'production',
