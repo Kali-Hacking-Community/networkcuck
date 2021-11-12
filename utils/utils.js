@@ -71,11 +71,7 @@ const checkIfExecRole = async (discordID, guildID) => {
     const execRoles = guildRoles.filter((role) =>
       ALLOW_EXEC_COMMAND_ROLES.includes(role.name)
     );
-
-    console.log(execRoles);
     const authorized = execRoles.some((r) => {
-      console.log(r.id);
-      console.log(guildMember.roles);
       return guildMember.roles.includes(r.id);
     });
 

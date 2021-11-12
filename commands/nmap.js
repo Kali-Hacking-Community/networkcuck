@@ -50,16 +50,21 @@ module.exports = {
       }
     }
 
+    const m = await message.channel.send(
+      `Executing command: \`nmap ${args.join(' ')}\`...`
+    );
+
     execFile(command, cmdArgs, async (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
         try {
-          return await message.channel.send({
+          return await m.edit({
+            content: 'Results Below',
             embeds: [
               {
                 color: 'FF0000',
                 title: 'Nmap Results',
-                description: `Error executing nmap \`${args.join('')}\``,
+                description: `Error executing nmap \`${args.join(' ')}\``,
                 fields: [
                   {
                     name: 'Output',
@@ -78,12 +83,13 @@ module.exports = {
       if (stderr) {
         console.log(`stderr: ${stderr}`);
         try {
-          return await message.channel.send({
+          return await m.edit({
+            content: 'Results Below',
             embeds: [
               {
                 color: 'FF0000',
                 title: 'Nmap Results',
-                description: `Error executing nmap \`${args.join('')}\``,
+                description: `Error executing nmap \`${args.join(' ')}\``,
                 fields: [
                   {
                     name: 'Output',
@@ -101,12 +107,13 @@ module.exports = {
       }
       console.log(`stdout: ${stdout}`);
       try {
-        await message.channel.send({
+        await m.edit({
+          content: 'Nmap Results Below',
           embeds: [
             {
               color: 3447003,
               title: 'Nmap Results',
-              description: `Nmap results for \`${args.join('')}\``,
+              description: `Nmap results for \`${args.join(' ')}\``,
               fields: [
                 {
                   name: 'Output',
@@ -122,13 +129,14 @@ module.exports = {
         const buffer = Buffer.from(stdout);
 
         try {
-          await message.channel.send({
+          await m.edit({
+            content: 'Results Below',
             embeds: [
               {
                 color: 3447003,
                 title: 'Nmap Results',
                 description: `Results too large to display in embed. Command output for ${args.join(
-                  ''
+                  ' '
                 )} is attached.`,
                 timestamp: new Date(),
               },
