@@ -1,4 +1,5 @@
 const { execFile } = require('child_process');
+const { MessageAttachment } = require('discord.js');
 const { NMAP_PATH, MODERATOR_LOG_CHANNEL_ID } = require('../config');
 
 module.exports = {
@@ -36,7 +37,7 @@ module.exports = {
                 },
                 {
                   name: 'Command Arguments Given',
-                  value: args.join(),
+                  value: args.join(''),
                 },
               ],
               timestamp: new Date(),
@@ -49,62 +50,96 @@ module.exports = {
       }
     }
 
-    execFile(command, cmdArgs, (error, stdout, stderr) => {
+    execFile(command, cmdArgs, async (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
-        return message.channel.send({
-          embeds: [
-            {
-              color: 'FF0000',
-              title: 'Nmap Results',
-              description: `Error executing nmap ${cmdArgs}`,
-              fields: [
-                {
-                  name: 'Output',
-                  value: `\`\`\`${error}\`\`\``,
-                },
-              ],
-              timestamp: new Date(),
-            },
-          ],
-        });
+        try {
+          return await message.channel.send({
+            embeds: [
+              {
+                color: 'FF0000',
+                title: 'Nmap Results',
+                description: `Error executing nmap \`${args.join('')}\``,
+                fields: [
+                  {
+                    name: 'Output',
+                    value: `\`\`\`${error}\`\`\``,
+                  },
+                ],
+                timestamp: new Date(),
+              },
+            ],
+          });
+        } catch (error) {
+          console.error(error);
+          return message.reply('Command failed: ', error);
+        }
       }
       if (stderr) {
         console.log(`stderr: ${stderr}`);
-        return message.channel.send({
+        try {
+          return await message.channel.send({
+            embeds: [
+              {
+                color: 'FF0000',
+                title: 'Nmap Results',
+                description: `Error executing nmap \`${args.join('')}\``,
+                fields: [
+                  {
+                    name: 'Output',
+                    value: `\`\`\`${stderr}\`\`\``,
+                  },
+                ],
+                timestamp: new Date(),
+              },
+            ],
+          });
+        } catch (error) {
+          console.error(error);
+          return message.reply('Command failed: ', error);
+        }
+      }
+      console.log(`stdout: ${stdout}`);
+      try {
+        await message.channel.send({
           embeds: [
             {
-              color: 'FF0000',
+              color: 3447003,
               title: 'Nmap Results',
-              description: `Error executing nmap ${cmdArgs}`,
+              description: `Nmap results for \`${args.join('')}\``,
               fields: [
                 {
                   name: 'Output',
-                  value: `\`\`\`${stderr}\`\`\``,
+                  value: `\`\`\`${stdout}\`\`\``,
                 },
               ],
               timestamp: new Date(),
             },
           ],
         });
-      }
-      console.log(`stdout: ${stdout}`);
-      message.channel.send({
-        embeds: [
-          {
-            color: 3447003,
-            title: 'Nmap Results',
-            description: `Nmap results for ${args[0]}`,
-            fields: [
+      } catch (error) {
+        console.error(error);
+        const buffer = Buffer.from(stdout);
+
+        try {
+          await message.channel.send({
+            embeds: [
               {
-                name: 'Output',
-                value: `\`\`\`${stdout}\`\`\``,
+                color: 3447003,
+                title: 'Nmap Results',
+                description: `Results too large to display in embed. Command output for ${args.join(
+                  ''
+                )} is attached.`,
+                timestamp: new Date(),
               },
             ],
-            timestamp: new Date(),
-          },
-        ],
-      });
+            files: [{ attachment: buffer, name: 'output.txt' }],
+          });
+        } catch (error) {
+          console.error(error);
+          return message.reply('Command failed: ', error);
+        }
+      }
     });
   },
 };
