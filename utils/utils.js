@@ -1,11 +1,11 @@
 const axios = require('axios');
-const { BOT_TOKEN, GUILD_ID, STAFF_ROLES } = require('../config');
+const { BOT_TOKEN, ALLOW_EXEC_COMMAND_ROLES } = require('../config');
 
-const getGuildMember = async (discordID) => {
+const getGuildMember = async (discordID, guildID) => {
   try {
     const res = await axios({
       method: 'get',
-      url: `https://discordapp.com/api/guilds/${GUILD_ID}/members/${discordID}`,
+      url: `https://discordapp.com/api/guilds/${guildID}/members/${discordID}`,
       headers: {
         Authorization: `Bot ${BOT_TOKEN}`,
       },
@@ -16,9 +16,9 @@ const getGuildMember = async (discordID) => {
   }
 };
 
-const checkIfStaff = async (discordID) => {
+const checkIfStaff = async (discordID, guildID) => {
   try {
-    const guildMember = await getGuildMember(discordID);
+    const guildMember = await getGuildMember(discordID, guildID);
 
     if (guildMember.error) {
       return false;
@@ -26,7 +26,7 @@ const checkIfStaff = async (discordID) => {
 
     const res = await axios({
       method: 'get',
-      url: `https://discordapp.com/api/guilds/${GUILD_ID}/roles`,
+      url: `https://discordapp.com/api/guilds/${guildID}/roles`,
       headers: {
         Authorization: `Bot ${BOT_TOKEN}`,
       },
@@ -51,4 +51,44 @@ const checkIfStaff = async (discordID) => {
   }
 };
 
+const checkIfExecRole = async (discordID, guildID) => {
+  try {
+    const guildMember = await getGuildMember(discordID, guildID);
+
+    if (guildMember.error) {
+      return false;
+    }
+
+    const res = await axios({
+      method: 'get',
+      url: `https://discordapp.com/api/guilds/${guildID}/roles`,
+      headers: {
+        Authorization: `Bot ${BOT_TOKEN}`,
+      },
+    });
+
+    const guildRoles = res.data;
+    const execRoles = guildRoles.filter((role) =>
+      ALLOW_EXEC_COMMAND_ROLES.includes(role.name)
+    );
+
+    console.log(execRoles);
+    const authorized = execRoles.some((r) => {
+      console.log(r.id);
+      console.log(guildMember.roles);
+      return guildMember.roles.includes(r.id);
+    });
+
+    if (!authorized) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 exports.checkIfStaff = checkIfStaff;
+exports.checkIfExecRole = checkIfExecRole;

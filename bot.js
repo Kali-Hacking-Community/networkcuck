@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
 const { BOT_TOKEN, PREFIX } = require('./config');
-const { checkIfStaff } = require('./utils/utils');
+const { checkIfStaff, checkIfExecRole } = require('./utils/utils');
 
 const client = new Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -72,14 +72,30 @@ client.on(`messageCreate`, async (message) => {
 
   if (command.staffOnly) {
     try {
-      const isStaff = await checkIfStaff(message.author.id);
+      const isStaff = await checkIfStaff(message.author.id, message.guild.id);
       if (!isStaff) {
         return message.reply(
-          `You don't have permission to use this \`${commandName}\`!`
+          `You don't have permission to use command \`${commandName}\`!`
         );
       }
     } catch (error) {
       return message.reply('Staff check failed!', error);
+    }
+  }
+
+  if (command.execRoleOnly) {
+    try {
+      const isExecRole = await checkIfExecRole(
+        message.author.id,
+        message.guild.id
+      );
+      if (!isExecRole) {
+        return message.reply(
+          `You don't have permission to use command \`${commandName}\`!`
+        );
+      }
+    } catch (error) {
+      return message.reply('Exec role check failed!', error);
     }
   }
 

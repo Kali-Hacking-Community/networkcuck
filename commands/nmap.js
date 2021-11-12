@@ -1,11 +1,11 @@
 const { execFile } = require('child_process');
-const { MessageAttachment } = require('discord.js');
 const { NMAP_PATH, MODERATOR_LOG_CHANNEL_ID } = require('../config');
 
 module.exports = {
   name: 'nmap',
   description: 'Perform basic port scan of IP / hostname',
   guildOnly: true,
+  execRoleOnly: true,
   usage: `<ip address|hostname>`,
   async execute(message, args) {
     const command = NMAP_PATH;
