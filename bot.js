@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
-const { BOT_TOKEN, PREFIX } = require('./config');
+const { BOT_TOKEN, PREFIX, MODERATOR_LOG_CHANNEL_ID } = require('./config');
 const { checkIfStaff, checkIfExecRole } = require('./utils/utils');
 
 const client = new Client({
@@ -96,6 +96,49 @@ client.on(`messageCreate`, async (message) => {
       }
     } catch (error) {
       return message.reply('Exec role check failed!', error);
+    }
+  }
+
+  if (command.commandInjectionProtection) {
+    const cmdArgs = args;
+    const forbidden = [';', '&', '&&', '$IFS'];
+    let forbiddenWordDetected = false;
+
+    cmdArgs.forEach((arg) => {
+      if (forbidden.some((c) => arg.includes(c))) {
+        forbiddenWordDetected = true;
+      }
+    });
+
+    if (forbiddenWordDetected) {
+      try {
+        const channel = await message.client.channels.fetch(
+          MODERATOR_LOG_CHANNEL_ID
+        );
+
+        return channel.send({
+          embeds: [
+            {
+              color: 'FFFF00',
+              title: `\:warning: Possible command injection attempt \:warning:`,
+              fields: [
+                {
+                  name: 'Offending User',
+                  value: message.author.tag,
+                },
+                {
+                  name: 'Command Given',
+                  value: `${command.name} ${args.join(' ')}`,
+                },
+              ],
+              timestamp: new Date(),
+            },
+          ],
+        });
+      } catch (error) {
+        console.error(error);
+        return message.reply('Command failed: ', error);
+      }
     }
   }
 
