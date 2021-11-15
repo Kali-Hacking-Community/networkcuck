@@ -1,4 +1,4 @@
-const { BOT_TOKEN, TH_API_URL, PREFIX } = require('./config');
+const { BOT_TOKEN, PREFIX } = require('./config');
 
 module.exports = {
   apps: [
@@ -11,7 +11,6 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
         BOT_TOKEN: BOT_TOKEN,
-        TH_API_URL: TH_API_URL,
         PREFIX: PREFIX,
       },
     },
