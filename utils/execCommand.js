@@ -18,7 +18,7 @@ module.exports = async function (message, args, commandName, binaryPath) {
           embeds: [
             {
               color: 'FF0000',
-              title: 'Nmap Results',
+              title: `${commandName} Results`,
               description: `Error executing \`${fullCommand}\``,
               fields: [
                 {
@@ -43,7 +43,7 @@ module.exports = async function (message, args, commandName, binaryPath) {
           embeds: [
             {
               color: 'FF0000',
-              title: 'Nmap Results',
+              title: `${commandName} Results`,
               description: `Error executing \`${fullCommand}\``,
               fields: [
                 {
