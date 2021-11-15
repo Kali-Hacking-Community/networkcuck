@@ -86,5 +86,10 @@ const checkIfExecRole = async (discordID, guildID) => {
   }
 };
 
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 exports.checkIfStaff = checkIfStaff;
 exports.checkIfExecRole = checkIfExecRole;
+exports.capitalizeFirstLetter = capitalizeFirstLetter;
