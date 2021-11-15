@@ -5,6 +5,7 @@
   "main": "bot.js",
   "scripts": {
     "start": "pm2 start ecosystem.config.js --env production",
+    "docker": "node bot.js",
     "dev": "nodemon --require dotenv/config bot.js"
   },
   "author": "",

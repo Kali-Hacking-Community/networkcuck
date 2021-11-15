@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 exports.MODERATOR_LOG_CHANNEL_ID = '908719010546339890';
 exports.ALLOW_EXEC_COMMAND_ROLES = ['Moderator', 'Administrator', 'Exec'];
 exports.STAFF_ROLES = ['Moderator', 'Administrator'];
