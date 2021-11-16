@@ -1,7 +1,15 @@
 const { execFile } = require('child_process');
 const { capitalizeFirstLetter } = require('./utils');
 
-module.exports = async function (message, args, commandName, binaryPath) {
+const maxBuffer = 1024 * 500; // 500KB
+
+module.exports = async function (
+  message,
+  args,
+  commandName,
+  binaryPath,
+  options = {attachmentOnly = false}
+) {
   const fullCommand = `${commandName} ${args.join(' ')}`;
   commandName = capitalizeFirstLetter(commandName);
 
@@ -9,7 +17,7 @@ module.exports = async function (message, args, commandName, binaryPath) {
     `Executing command: \`${fullCommand}\`...`
   );
 
-  execFile(binaryPath, args, async (error, stdout, stderr) => {
+  execFile(binaryPath, args, { maxBuffer }, async (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       try {
@@ -61,6 +69,29 @@ module.exports = async function (message, args, commandName, binaryPath) {
       }
     }
     console.log(`stdout: ${stdout}`);
+
+    if (options.attachmentOnly) {
+      const buffer = Buffer.from(stdout);
+
+      try {
+        return await m.edit({
+          content: `${commandName} Results`,
+          embeds: [
+            {
+              color: 3447003,
+              title: `${commandName} Results`,
+              description: `Command output for \`${fullCommand}\` is attached.`,
+              timestamp: new Date(),
+            },
+          ],
+          files: [{ attachment: buffer, name: 'output.txt' }],
+        });
+      } catch (error) {
+        console.error(error);
+        return message.reply('Command failed: ', error);
+      }
+    }
+
     try {
       await m.edit({
         content: `${commandName} Results`,

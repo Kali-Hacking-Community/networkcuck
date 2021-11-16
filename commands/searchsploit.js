@@ -10,6 +10,9 @@ module.exports = {
   commandInjectionProtection: true,
   usage: `-h`,
   async execute(message, args) {
-    await execCommand(message, args, this.name, SEARCHSPLOIT_PATH);
+    args.push('--colour');
+    await execCommand(message, args, this.name, SEARCHSPLOIT_PATH, {
+      attachmentOnly: true,
+    });
   },
 };
