@@ -8,7 +8,7 @@ module.exports = async function (
   args,
   commandName,
   binaryPath,
-  options = {attachmentOnly = false}
+  options = { attachmentOnly: false }
 ) {
   const fullCommand = `${commandName} ${args.join(' ')}`;
   commandName = capitalizeFirstLetter(commandName);
